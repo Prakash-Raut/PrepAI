@@ -3,10 +3,11 @@
 import { cn } from "@/lib/utils";
 import { vapi } from "@/vapi";
 
+import { interviewer } from "@/constants";
 import type { Message } from "@/types/vapi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 enum CallStatus {
 	INACTIVE = "INACTIVE",
@@ -24,9 +25,17 @@ type AgentProps = {
 	userName: string;
 	userId?: string;
 	type: "generate" | "interview";
+	interviewId?: string;
+	questions?: string[];
 };
 
-const Agent = ({ userName, userId, type }: AgentProps) => {
+const Agent = ({
+	userName,
+	userId,
+	type,
+	interviewId,
+	questions,
+}: AgentProps) => {
 	const router = useRouter();
 	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
 	const [messages, setMessages] = useState<SavedMessage[]>([]);
@@ -80,6 +89,35 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
 		};
 	}, []);
 
+	const handleGenerateFeedback = useCallback(
+		async (messages: SavedMessage[]) => {
+			console.log("Generating feedback...");
+
+			const { success, feedbackId: id } = {
+				success: true,
+				feedbackId: "feedback-id",
+			};
+
+			if (success && id) {
+				router.push(`/interview/${interviewId}/feedback`);
+			} else {
+				console.log("Error saving feedback");
+				router.push("/");
+			}
+		},
+		[router, interviewId],
+	);
+
+	useEffect(() => {
+		if (callStatus === CallStatus.FINISHED) {
+			if (type === "generate") {
+				router.push("/");
+			} else {
+				handleGenerateFeedback(messages);
+			}
+		}
+	}, [callStatus, handleGenerateFeedback, messages, router, type]);
+
 	const handleCall = async () => {
 		setCallStatus(CallStatus.CONNECTING);
 
@@ -88,6 +126,19 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
 				variableValues: {
 					username: userName,
 					userId: userId,
+				},
+			});
+		} else {
+			let formattedQuestions = "";
+			if (questions) {
+				formattedQuestions = questions
+					.map((question) => `- ${question}`)
+					.join("\n");
+			}
+
+			await vapi.start(interviewer, {
+				variableValues: {
+					questions: formattedQuestions,
 				},
 			});
 		}
