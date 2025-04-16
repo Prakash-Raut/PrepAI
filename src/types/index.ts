@@ -28,3 +28,21 @@ export type Interview = {
 	type: string;
 	finalized: boolean;
 };
+
+export type User = {
+	name: string;
+	email: string;
+	id: string;
+};
+
+export type SignInParams = {
+	email: string;
+	idToken: string;
+};
+
+export type SignUpParams = {
+	uid: string;
+	name: string;
+	email: string;
+	password: string;
+};

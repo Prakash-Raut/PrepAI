@@ -2,13 +2,7 @@
 
 import type { Control, FieldValues, Path } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import {
-	FormControl,
-	FormDescription,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "./ui/form";
+import { FormControl, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 
 interface FormFieldProps<T extends FieldValues> {
@@ -36,7 +30,6 @@ const FormField = <T extends FieldValues>({
 					<FormControl>
 						<Input type={type} placeholder={placeholder} {...field} />
 					</FormControl>
-					<FormDescription>This is your public display name.</FormDescription>
 					<FormMessage />
 				</FormItem>
 			)}
