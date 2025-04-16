@@ -1,12 +1,26 @@
+import { getCurrentUser } from "@/actions/auth";
+import { getInterviewsByUserId, getLatestInterviews } from "@/actions/general";
 import InterviewCard from "@/components/interview-card";
 import { Button } from "@/components/ui/button";
-import { dummyInterviews } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-	const hasPastInterviews = true;
-	const hasUpcomingInterviews = true;
+const Home = async () => {
+	const user = await getCurrentUser();
+
+	if (!user) {
+		redirect("/sign-in");
+	}
+
+	const [userInterviews, latestInterviews] = await Promise.all([
+		await getInterviewsByUserId(user.id),
+		await getLatestInterviews({ userId: user.id }),
+	]);
+
+	const hasPastInterviews = userInterviews.length > 0;
+	const hasUpcomingInterviews = latestInterviews.length > 0;
+
 	return (
 		<>
 			<section className="card-cta">
@@ -32,7 +46,7 @@ export default function Home() {
 
 				<div className="interviews-section">
 					{hasPastInterviews ? (
-						dummyInterviews.map((interview) => (
+						userInterviews?.map((interview) => (
 							<InterviewCard
 								key={interview.id}
 								userId={interview.userId}
@@ -54,7 +68,7 @@ export default function Home() {
 
 				<div className="interviews-section">
 					{hasUpcomingInterviews ? (
-						dummyInterviews?.map((interview) => (
+						latestInterviews?.map((interview) => (
 							<InterviewCard
 								key={interview.id}
 								userId={interview.userId}
@@ -72,4 +86,6 @@ export default function Home() {
 			</section>
 		</>
 	);
-}
+};
+
+export default Home;

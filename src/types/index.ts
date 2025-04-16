@@ -46,3 +46,8 @@ export type SignUpParams = {
 	email: string;
 	password: string;
 };
+
+export type GetLatestInterviewsParams = {
+	userId: string;
+	limit?: number;
+};

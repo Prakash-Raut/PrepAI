@@ -1,8 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { vapi } from "@/vapi";
+
+import type { Message } from "@/types/vapi";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 enum CallStatus {
 	INACTIVE = "INACTIVE",
@@ -11,27 +15,93 @@ enum CallStatus {
 	FINISHED = "FINISHED",
 }
 
+type SavedMessage = {
+	role: "user" | "system" | "assistant";
+	content: string;
+};
+
 type AgentProps = {
 	userName: string;
 	userId?: string;
 	type: "generate" | "interview";
 };
 
-const Agent = ({ userName }: AgentProps) => {
-	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.FINISHED);
+const Agent = ({ userName, userId, type }: AgentProps) => {
+	const router = useRouter();
+	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+	const [messages, setMessages] = useState<SavedMessage[]>([]);
+	const [isSpeaking, setIsSpeaking] = useState(false);
+	const [lastMessage, setLastMessage] = useState<string>("");
 
-	const isSpeaking = true;
+	useEffect(() => {
+		const onCallStart = () => {
+			setCallStatus(CallStatus.ACTIVE);
+		};
 
-	const messages = [
-		"Whats your name?",
-		"My name is John Doe, nice to meet you!",
-	];
+		const onCallEnd = () => {
+			setCallStatus(CallStatus.FINISHED);
+		};
 
-	const lastMessage = messages[messages.length - 1];
+		const onMessage = (message: Message) => {
+			if (message.type === "transcript" && message.transcriptType === "final") {
+				const newMessage = { role: message.role, content: message.transcript };
+				setMessages((prev) => [...prev, newMessage]);
+			}
+		};
 
-	const handleCall = () => {};
+		const onSpeechStart = () => {
+			console.log("speech start");
+			setIsSpeaking(true);
+		};
 
-	const handleDisconnect = () => {};
+		const onSpeechEnd = () => {
+			console.log("speech end");
+			setIsSpeaking(false);
+		};
+
+		const onError = (error: Error) => {
+			console.log("Error:", error);
+		};
+
+		vapi.on("call-start", onCallStart);
+		vapi.on("call-end", onCallEnd);
+		vapi.on("message", onMessage);
+		vapi.on("speech-start", onSpeechStart);
+		vapi.on("speech-end", onSpeechEnd);
+		vapi.on("error", onError);
+
+		return () => {
+			vapi.off("call-start", onCallStart);
+			vapi.off("call-end", onCallEnd);
+			vapi.off("message", onMessage);
+			vapi.off("speech-start", onSpeechStart);
+			vapi.off("speech-end", onSpeechEnd);
+			vapi.off("error", onError);
+		};
+	}, []);
+
+	const handleCall = async () => {
+		setCallStatus(CallStatus.CONNECTING);
+
+		if (type === "generate") {
+			await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID, {
+				variableValues: {
+					username: userName,
+					userId: userId,
+				},
+			});
+		}
+	};
+
+	const handleDisconnect = () => {
+		setCallStatus(CallStatus.FINISHED);
+		vapi.stop();
+	};
+
+	const latestMessage = messages[messages.length - 1]?.content;
+
+	const isCallInActiveOrFinished =
+		callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
 
 	return (
 		<>
@@ -113,4 +183,5 @@ const Agent = ({ userName }: AgentProps) => {
 		</>
 	);
 };
+
 export default Agent;
