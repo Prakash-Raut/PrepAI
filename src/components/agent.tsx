@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { vapi } from "@/vapi";
 
+import { createFeedback } from "@/actions/general";
 import { interviewer } from "@/constants";
 import type { Message } from "@/types/vapi";
 import Image from "next/image";
@@ -27,6 +28,7 @@ type AgentProps = {
 	type: "generate" | "interview";
 	interviewId?: string;
 	questions?: string[];
+	feedbackId?: string;
 };
 
 const Agent = ({
@@ -35,6 +37,7 @@ const Agent = ({
 	type,
 	interviewId,
 	questions,
+	feedbackId,
 }: AgentProps) => {
 	const router = useRouter();
 	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -93,10 +96,12 @@ const Agent = ({
 		async (messages: SavedMessage[]) => {
 			console.log("Generating feedback...");
 
-			const { success, feedbackId: id } = {
-				success: true,
-				feedbackId: "feedback-id",
-			};
+			const { success, feedbackId: id } = await createFeedback({
+				interviewId: interviewId as string,
+				userId: userId as string,
+				transcript: messages,
+				feedbackId,
+			});
 
 			if (success && id) {
 				router.push(`/interview/${interviewId}/feedback`);
@@ -105,10 +110,14 @@ const Agent = ({
 				router.push("/");
 			}
 		},
-		[router, interviewId],
+		[router, interviewId, feedbackId, userId],
 	);
 
 	useEffect(() => {
+		if (messages.length > 0) {
+			setLastMessage(messages[messages.length - 1].content);
+		}
+
 		if (callStatus === CallStatus.FINISHED) {
 			if (type === "generate") {
 				router.push("/");

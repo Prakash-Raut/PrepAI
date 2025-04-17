@@ -49,8 +49,8 @@ const Home = async () => {
 						userInterviews?.map((interview) => (
 							<InterviewCard
 								key={interview.id}
+								id={interview.id}
 								userId={interview.userId}
-								interviewId={interview.id}
 								role={interview.role}
 								type={interview.type}
 								techstack={interview.techstack}
@@ -71,8 +71,8 @@ const Home = async () => {
 						latestInterviews?.map((interview) => (
 							<InterviewCard
 								key={interview.id}
+								id={interview.id}
 								userId={interview.userId}
-								interviewId={interview.id}
 								role={interview.role}
 								type={interview.type}
 								techstack={interview.techstack}

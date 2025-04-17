@@ -8,12 +8,11 @@ import { getCurrentUser } from "@/actions/auth";
 import { getInterviewById } from "@/actions/general";
 import DisplayTechIcons from "@/components/display-tech-icons";
 
-type RouteParams = {
-	params: Promise<Record<string, string>>;
-	searchParams: Promise<Record<string, string>>;
-};
-
-const InterviewDetails = async ({ params }: RouteParams) => {
+const InterviewDetails = async ({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) => {
 	const { id } = await params;
 
 	const user = await getCurrentUser();

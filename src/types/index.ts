@@ -51,3 +51,15 @@ export type GetLatestInterviewsParams = {
 	userId: string;
 	limit?: number;
 };
+
+export type CreateFeedbackParams = {
+	interviewId: string;
+	userId: string;
+	transcript: { role: string; content: string }[];
+	feedbackId?: string;
+};
+
+export type GetFeedbackByInterviewIdParams = {
+	interviewId: string;
+	userId: string;
+};
