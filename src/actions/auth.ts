@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, db } from "@/firebase/admin";
+import { auth, db } from "@/lib/firebase/admin";
 import type { SignInParams, SignUpParams, User } from "@/types";
 import { FirebaseError } from "firebase/app";
 import { cookies } from "next/headers";

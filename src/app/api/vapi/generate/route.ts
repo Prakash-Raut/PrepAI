@@ -1,11 +1,12 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { db } from "@/firebase/admin";
+import { db } from "@/lib/firebase/admin";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
 import { getRandomInterviewCover } from "@/lib/utils";
+import { z } from "zod";
 
 export async function GET() {
 	return NextResponse.json(
@@ -14,8 +15,23 @@ export async function GET() {
 	);
 }
 
+const schema = z.object({
+	type: z.string(),
+	role: z.string(),
+	level: z.string(),
+	techstack: z.string(),
+	amount: z.string(),
+	userId: z.string(),
+});
+
 export async function POST(request: NextRequest) {
-	const { type, role, level, techstack, amount, userId } = await request.json();
+	const result = schema.safeParse(await request.json());
+
+	if (!result.success) {
+		return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+	}
+
+	const { type, role, level, techstack, amount, userId } = result.data;
 
 	try {
 		const { text: questions } = await generateText({

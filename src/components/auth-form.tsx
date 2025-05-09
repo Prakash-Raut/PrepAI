@@ -1,7 +1,7 @@
 "use client";
 
 import { signIn, signUp } from "@/actions/auth";
-import { auth } from "@/firebase/client";
+import { auth } from "@/lib/firebase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	createUserWithEmailAndPassword,

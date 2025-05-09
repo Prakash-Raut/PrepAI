@@ -1,10 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { vapi } from "@/vapi";
-
 import { createFeedback } from "@/actions/general";
-import { interviewer } from "@/constants";
+import { cn } from "@/lib/utils";
+import { vapi } from "@/lib/vapi";
 import type { Message } from "@/types/vapi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -145,11 +143,14 @@ const Agent = ({
 					.join("\n");
 			}
 
-			await vapi.start(interviewer, {
-				variableValues: {
-					questions: formattedQuestions,
+			await vapi.start(
+				{},
+				{
+					variableValues: {
+						questions: formattedQuestions,
+					},
 				},
-			});
+			);
 		}
 	};
 
@@ -157,11 +158,6 @@ const Agent = ({
 		setCallStatus(CallStatus.FINISHED);
 		vapi.stop();
 	};
-
-	const latestMessage = messages[messages.length - 1]?.content;
-
-	const isCallInActiveOrFinished =
-		callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
 
 	return (
 		<>

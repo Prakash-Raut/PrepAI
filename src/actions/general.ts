@@ -1,7 +1,7 @@
 "use server";
 
-import { feedbackSchema } from "@/constants";
-import { db } from "@/firebase/admin";
+import { db } from "@/lib/firebase/admin";
+import { feedbackSchema } from "@/lib/schema/feedback";
 import type {
 	CreateFeedbackParams,
 	Feedback,
