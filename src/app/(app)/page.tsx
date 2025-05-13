@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/actions/auth";
 import { getInterviewsByUserId, getLatestInterviews } from "@/actions/general";
 import InterviewCard from "@/components/interview-card";
 import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -84,6 +85,90 @@ const Home = async () => {
 					)}
 				</div>
 			</section>
+
+			<footer className="text-white py-12">
+				<div className="container mx-auto px-4">
+					<div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+					<div>
+						<Link href="/" className="flex items-start gap-2">
+							<Image src="/logo.svg" alt="logo" width={38} height={32} />
+							<h3 className="text-xl font-bold mb-4">Prep AI</h3>
+						</Link>
+						<p className="text-gray-400">The AI-powered platform that helps you ace your technical interviews.</p>
+					</div>
+
+					<div>
+						<h4 className="text-lg font-semibold mb-4">Resources</h4>
+						<ul className="space-y-2">
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Blog
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Guides
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							FAQ
+							</Link>
+						</li>
+						</ul>
+					</div>
+
+					<div>
+						<h4 className="text-lg font-semibold mb-4">Company</h4>
+						<ul className="space-y-2">
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							About
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Careers
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Contact
+							</Link>
+						</li>
+						</ul>
+					</div>
+
+					<div>
+						<h4 className="text-lg font-semibold mb-4">Legal</h4>
+						<ul className="space-y-2">
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Privacy
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Terms
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="text-gray-400 hover:text-white transition">
+							Cookie Policy
+							</Link>
+						</li>
+						</ul>
+					</div>
+					</div>
+
+					<div className="border-t border-gray-800 mt-12 pt-8 text-center">
+					<p className="flex items-center justify-center text-gray-400">
+						Made with <Heart className="h-4 w-4 text-red-500 mx-1 fill-current" /> by Prep AI Team
+					</p>
+					<p className="mt-2 text-gray-500">© {new Date().getFullYear()} Prep AI. All rights reserved.</p>
+					</div>
+				</div>
+    		</footer>
 		</>
 	);
 };
